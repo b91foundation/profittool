@@ -1,6 +1,6 @@
-from pytvspos import is_offline
-from pytvspos import Account
-import pytvspos
+from B91SDK import is_offline
+from B91SDK import Account
+import B91SDK
 import time
 import datetime
 import struct
@@ -11,7 +11,7 @@ import xlwt
 import xlrd
 
 class ProfitTool(object):
-    def __init__(self, chain=pytvspos.default_chain(), address='', fee_rate=0):
+    def __init__(self, chain=B91SDK.default_chain(), address='', fee_rate=0):
         self.chain = chain
         self.wrapper = chain.api_wrapper
         self.address = address
@@ -31,10 +31,10 @@ class ProfitTool(object):
             raise InvalidAddressException("No address")
         elif start_height <= 0:
             msg = 'start height must be > 0'
-            pytvspos.throw_error(msg, InvalidParameterException)
+            B91SDK.throw_error(msg, InvalidParameterException)
         elif end_height > now_height:
             msg = 'end height must be <= now_height' % self.now_height
-            pytvspos.throw_error(msg, InvalidParameterException)
+            B91SDK.throw_error(msg, InvalidParameterException)
         else:
             print('calculating', start_height, '==>', end_height)
             begin = start_height
@@ -67,14 +67,14 @@ class ProfitTool(object):
 
     def fetch_leases_to_pay(self, last_height):
         if is_offline():
-            pytvspos.throw_error("Cannot fetch leases_to_pay in offline mode.", NetworkException)
+            B91SDK.throw_error("Cannot fetch leases_to_pay in offline mode.", NetworkException)
         try:
             resp = self.wrapper.request('/transactions/activeLeaseList/%s' % self.address)
             logging.debug(resp)
             #print(resp[0])
         except Exception as ex:
             msg = "Failed to get activeLeaseList. ({})".format(ex)
-            pytvspos.throw_error(msg, NetworkException)
+            B91SDK.throw_error(msg, NetworkException)
         self.leases_to_pay = []
         self.leases_total = 0
         for leaseidx in range(len(resp[0])):
@@ -93,7 +93,7 @@ class ProfitTool(object):
 
     def fetch_minting_average_balance(self):
         if is_offline():
-            pytvspos.throw_error("Cannot fetch minting_average_balance in offline mode.", NetworkException)
+            B91SDK.throw_error("Cannot fetch minting_average_balance in offline mode.", NetworkException)
             return 0
         try:
             resp = self.wrapper.request('/addresses/balance/details/%s' % self.address)
@@ -105,7 +105,7 @@ class ProfitTool(object):
             return None
         except Exception as ex:
             msg = "Failed to get minting average balance. ({})".format(ex)
-            pytvspos.throw_error(msg, NetworkException)
+            B91SDK.throw_error(msg, NetworkException)
             return 0
 
     def calculate_amount_to_pay(self):
@@ -341,10 +341,10 @@ class ProfitTool(object):
         
         chain_name = table.cell(1,0).value
 
-        if chain_name == pytvspos.DEFAULT_CHAIN:
-            self.chain=pytvspos.default_chain()            
-        elif chain_name == pytvspos.TESTNET_CHAIN:
-            self.chain=pytvspos.testnet_chain()
+        if chain_name == B91SDK.DEFAULT_CHAIN:
+            self.chain=B91SDK.default_chain()            
+        elif chain_name == B91SDK.TESTNET_CHAIN:
+            self.chain=B91SDK.testnet_chain()
         else:
             self.chain.chain_name = 'custom'
 
@@ -382,7 +382,7 @@ class ProfitTool(object):
                 return False
 
         chain_name = table.cell(1,0).value
-        if chain_name!=pytvspos.DEFAULT_CHAIN and chain_name!=pytvspos.TESTNET_CHAIN:
+        if chain_name!=B91SDK.DEFAULT_CHAIN and chain_name!=B91SDK.TESTNET_CHAIN:
             return False
         headers = table.row_values(2)
         #print(headers)

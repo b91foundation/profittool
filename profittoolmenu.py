@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import pytvspos as pv
-from pytvspos import Account
-from pytvspos import Wrapper
+import B91SDK as pv
+from B91SDK import Account
+from B91SDK import Wrapper
 import datetime
 import time
 import sys
